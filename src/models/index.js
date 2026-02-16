@@ -1,20 +1,37 @@
-const { sequelize } = require('../database/connection');
+const { sequelize } = require("../database/connection");
 
-// Importar todos los modelos aquí
-// const User = require('./User');
-const MotorBike = require('./motorBike.model');
+const MotorBike = require("./motorBike.model");
+const Account = require("./account.model");
+const Transaction = require("./transaction.model");
 
-// Definir asociaciones aquí si es necesario
-// User.hasMany(Device);
-// Device.belongsTo(User);
+// Asociaciones
 
-// Sincronizar modelos (opcional, mejor usar migraciones en producción)
+MotorBike.hasMany(Transaction, {
+  foreignKey: "motorBikeId",
+  as: "transactions",
+});
+
+Transaction.belongsTo(MotorBike, {
+  foreignKey: "motorBikeId",
+  as: "motorBike",
+});
+
+Account.hasMany(Transaction, {
+  foreignKey: "accountId",
+  as: "transactions",
+});
+
+Transaction.belongsTo(Account, {
+  foreignKey: "accountId",
+  as: "account",
+});
+
+// ⚠️ En producción: usar migraciones, no sync
 sequelize.sync({ alter: true });
 
 module.exports = {
-    sequelize,
-    // Exportar modelos
-    // User,
-    MotorBike,
+  sequelize,
+  Account,
+  Transaction,
+  MotorBike,
 };
-

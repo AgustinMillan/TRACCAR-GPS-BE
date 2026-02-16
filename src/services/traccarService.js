@@ -17,23 +17,29 @@ class TraccarService {
       if (!motorBike) {
         throw new Error(`Moto de motor no encontrada`);
       }
+
       let positions = null;
+
       if (motorBike.gpsType !== "TRACCAR") {
         if (!this.daGpsClients.has(motorBikeId)) {
-          const daGpsClient = new DAGPSClient(
+          const daGpsClient = await this.getdaGpsClient(
             motorBike.trackingToken,
-            "123456"
           );
-
-          await daGpsClient.init();
-          await daGpsClient.close();
           this.daGpsClients.set(motorBikeId, daGpsClient);
         }
+
         const daGpsClient = this.daGpsClients.get(motorBikeId);
-        positions = await daGpsClient.getOnlineGpsInfo({
+        const res = await daGpsClient.getOnlineGpsInfo({
           userId: daGpsClient.userId,
           schoolId: daGpsClient.userId,
         });
+
+        if (res.reconect) {
+          this.daGpsClients.delete(motorBikeId);
+          throw new Error("Requiere reconexión, eliminando cliente DAGPS");
+        } else {
+          positions = res;
+        }
       } else {
         positions = await traccarClient.getPositions(motorBike.trackingToken);
       }
@@ -49,6 +55,15 @@ class TraccarService {
 
   async getPositionByTraccar(trackingToken) {
     return await traccarClient.getPositions(trackingToken);
+  }
+
+  async getdaGpsClient(trackingToken) {
+    const daGpsClient = new DAGPSClient(trackingToken, "123456");
+
+    await daGpsClient.init();
+    await daGpsClient.close();
+
+    return daGpsClient;
   }
 }
 

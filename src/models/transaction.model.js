@@ -1,0 +1,32 @@
+const { DataTypes } = require("sequelize");
+const { sequelize } = require("../database/connection");
+
+const Transaction = sequelize.define("Transaction", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  accountId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  motorBikeId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  amount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  type: {
+    type: DataTypes.ENUM("ingreso", "egreso"),
+    allowNull: false,
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+});
+
+module.exports = Transaction;

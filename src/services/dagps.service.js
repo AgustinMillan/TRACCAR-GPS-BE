@@ -123,8 +123,10 @@ class DAGPSClient {
     });
 
     return {
-      longitude: res.data.records[0][1],
-      latitude: res.data.records[0][2],
+      longitude: res.data?.records?.[0]?.[1],
+      latitude: res.data?.records?.[0]?.[2],
+      date: res.data?.records?.[0]?.[5],
+      reconect: String(res.data).includes("logout.aspx") ? true : false,
     };
   }
 
