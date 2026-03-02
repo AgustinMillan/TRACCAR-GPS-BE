@@ -19,6 +19,10 @@ const Account = sequelize.define("Account", {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
 });
 
 module.exports = Account;

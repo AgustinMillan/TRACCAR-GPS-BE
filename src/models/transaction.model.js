@@ -13,7 +13,7 @@ const Transaction = sequelize.define("Transaction", {
   },
   motorBikeId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   amount: {
     type: DataTypes.INTEGER,
@@ -22,6 +22,10 @@ const Transaction = sequelize.define("Transaction", {
   type: {
     type: DataTypes.ENUM("ingreso", "egreso"),
     allowNull: false,
+  },
+  date: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
   },
   description: {
     type: DataTypes.STRING,

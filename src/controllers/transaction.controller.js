@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const motorBikeService = require("../services/motorBike.service");
+const transactionService = require("../services/transaction.service");
 
 router.get("/", async (req, res) => {
   try {
-    const result = await motorBikeService.getMotorBikes();
+    const result = await transactionService.getTransactions(req.query);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({
@@ -16,8 +16,8 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const result = await motorBikeService.getMotorBikeById(req.params.id);
-    res.json(result);
+    const result = await transactionService.getTransactionById(req.params.id);
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -28,8 +28,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const result = await motorBikeService.createMotorBike(req.body);
-    res.json(result);
+    const result = await transactionService.createTransaction(req.body);
+    res.status(201).json(result);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -40,11 +40,11 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    const result = await motorBikeService.updateMotorBike(
+    result = await transactionService.updateTransaction(
       req.params.id,
       req.body,
     );
-    res.json(result);
+    res.status(203).json(result);
   } catch (error) {
     res.status(500).json({
       success: false,
