@@ -22,10 +22,20 @@ class TraccarService {
 
       if (motorBike.gpsType !== "TRACCAR") {
         if (!this.daGpsClients.has(motorBikeId)) {
+          this.daGpsClients.set(motorBikeId, "initializing");
+
           const daGpsClient = await this.getdaGpsClient(
             motorBike.trackingToken,
           );
           this.daGpsClients.set(motorBikeId, daGpsClient);
+        }
+
+        if (this.daGpsClients.get(motorBikeId) === "initializing") {
+          return {
+            success: true,
+            message:
+              "Inicializando conexión DAGPS, por favor intente nuevamente en unos segundos",
+          };
         }
 
         const daGpsClient = this.daGpsClients.get(motorBikeId);
