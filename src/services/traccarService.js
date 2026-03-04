@@ -12,7 +12,18 @@ class TraccarService {
   }
 
   async getPositions(motorBikeId) {
-    try {
+    const TIMEOUT_MS = 20000;
+
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        this.daGpsClients.delete(motorBikeId);
+        reject(
+          new Error("Timeout de 20 segundos excedido. Cliente eliminado."),
+        );
+      }, TIMEOUT_MS);
+    });
+
+    const mainLogic = async () => {
       const motorBike = await MotorBike.findByPk(motorBikeId);
       if (!motorBike) {
         throw new Error(`Moto de motor no encontrada`);
@@ -27,6 +38,7 @@ class TraccarService {
           const daGpsClient = await this.getdaGpsClient(
             motorBike.trackingToken,
           );
+
           this.daGpsClients.set(motorBikeId, daGpsClient);
         }
 
@@ -39,6 +51,7 @@ class TraccarService {
         }
 
         const daGpsClient = this.daGpsClients.get(motorBikeId);
+
         const res = await daGpsClient.getOnlineGpsInfo({
           userId: daGpsClient.userId,
           schoolId: daGpsClient.userId,
@@ -53,11 +66,16 @@ class TraccarService {
       } else {
         positions = await traccarClient.getPositions(motorBike.trackingToken);
       }
+
       return {
         success: true,
         data: positions,
-        count: positions.length,
+        count: positions?.length || 0,
       };
+    };
+
+    try {
+      return await Promise.race([mainLogic(), timeoutPromise]);
     } catch (error) {
       throw new Error(`Error obteniendo dispositivos: ${error.message}`);
     }
