@@ -53,7 +53,7 @@ class TransactionService {
         where: whereClause,
         offset: (page - 1) * limit,
         limit,
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
       });
       return {
         success: true,
