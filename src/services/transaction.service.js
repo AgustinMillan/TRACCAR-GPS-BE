@@ -1,31 +1,37 @@
-const e = require("express");
-const { Transaction } = require("../models");
-const AccountService = require("./account.service");
+const { Transaction, Account, sequelize } = require("../models");
 
 class TransactionService {
-  async createTransaction(transaction) {
+  async createTransaction(transactionData) {
+    const t = await sequelize.transaction();
     try {
-      const account = await AccountService.getAccountById(
-        transaction.accountId,
-      );
+      const amount = Number(transactionData.amount);
 
-      if (transaction.type === "ingreso") {
-        await AccountService.updateAccount(transaction.accountId, {
-          balance: account.balance + transaction.amount,
+      const newTransaction = await Transaction.create(transactionData, {
+        transaction: t,
+      });
+
+      if (newTransaction.type === "ingreso") {
+        await Account.increment("balance", {
+          by: amount,
+          where: { id: newTransaction.accountId },
+          transaction: t,
         });
       } else {
-        await AccountService.updateAccount(transaction.accountId, {
-          balance: account.balance - transaction.amount,
+        await Account.decrement("balance", {
+          by: amount,
+          where: { id: newTransaction.accountId },
+          transaction: t,
         });
       }
 
-      const newTransaction = await Transaction.create(transaction);
+      await t.commit();
 
       return {
         success: true,
         data: newTransaction,
       };
     } catch (error) {
+      await t.rollback();
       throw new Error(`Error creando transacción: ${error.message}`);
     }
   }
@@ -79,40 +85,74 @@ class TransactionService {
       throw new Error(`Error obteniendo transacción: ${error.message}`);
     }
   }
-  async updateTransaction(id, transaction) {
+  async updateTransaction(id, transactionData) {
+    const t = await sequelize.transaction();
     try {
-      const existingTransaction = await Transaction.findByPk(id);
+      const existingTransaction = await Transaction.findByPk(id, {
+        transaction: t,
+      });
       if (!existingTransaction) {
         throw new Error("Transacción no encontrada");
       }
 
-      const account = await AccountService.getAccountById(
-        existingTransaction.accountId,
+      const oldAmount = Number(existingTransaction.amount);
+      const newAmount = Number(
+        transactionData.amount !== undefined
+          ? transactionData.amount
+          : existingTransaction.amount
       );
 
-      const oldAmount = existingTransaction.amount;
-      const newAmount = transaction.amount;
+      const oldType = existingTransaction.type;
+      const newType =
+        transactionData.type !== undefined
+          ? transactionData.type
+          : existingTransaction.type;
 
-      const diff = newAmount - oldAmount;
+      const oldAccountId = existingTransaction.accountId;
+      const newAccountId =
+        transactionData.accountId !== undefined
+          ? transactionData.accountId
+          : existingTransaction.accountId;
 
-      if (existingTransaction.type === "ingreso") {
-        await AccountService.updateAccount(existingTransaction.accountId, {
-          balance: account.balance + diff,
+      // Revertir balance en cuenta antigua
+      if (oldType === "ingreso") {
+        await Account.decrement("balance", {
+          by: oldAmount,
+          where: { id: oldAccountId },
+          transaction: t,
         });
       } else {
-        await AccountService.updateAccount(existingTransaction.accountId, {
-          balance: account.balance - diff,
+        await Account.increment("balance", {
+          by: oldAmount,
+          where: { id: oldAccountId },
+          transaction: t,
         });
       }
 
-      await Transaction.update(transaction, {
-        where: { id },
-      });
+      // Aplicar balance en cuenta nueva
+      if (newType === "ingreso") {
+        await Account.increment("balance", {
+          by: newAmount,
+          where: { id: newAccountId },
+          transaction: t,
+        });
+      } else {
+        await Account.decrement("balance", {
+          by: newAmount,
+          where: { id: newAccountId },
+          transaction: t,
+        });
+      }
+
+      await existingTransaction.update(transactionData, { transaction: t });
+
+      await t.commit();
 
       return {
         success: true,
       };
     } catch (error) {
+      await t.rollback();
       throw new Error(`Error actualizando transacción: ${error.message}`);
     }
   }

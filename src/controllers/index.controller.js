@@ -8,5 +8,6 @@ router.use("/traccar", traccarController);
 router.use("/motor-bikes", motorBikeController);
 router.use("/balance/accounts", require("./account.controller"));
 router.use("/balance/payments", require("./transaction.controller"));
+router.use("/motor-bike-days", require("./motorBikeDay.controller"));
 
 module.exports = router;

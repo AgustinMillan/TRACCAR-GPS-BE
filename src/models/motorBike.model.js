@@ -31,6 +31,15 @@ const MotorBike = sequelize.define("MotorBike", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  debt: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  },
+  lastMaintenanceDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+  },
 });
 
 module.exports = MotorBike;

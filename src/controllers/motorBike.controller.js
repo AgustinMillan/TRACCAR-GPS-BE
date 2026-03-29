@@ -14,6 +14,18 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/reports/debts", async (req, res) => {
+  try {
+    const result = await motorBikeService.getMotorBikesDebts();
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const result = await motorBikeService.getMotorBikeById(req.params.id);

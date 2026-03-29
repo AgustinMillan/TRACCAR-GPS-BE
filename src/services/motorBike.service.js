@@ -14,6 +14,22 @@ class MotorBikeService {
         }
     }
 
+    async getMotorBikesDebts() {
+        try {
+            const motorBikes = await MotorBike.findAll({
+                attributes: ['id', 'name', 'debt', 'isActive'],
+                order: [['debt', 'DESC']]
+            });
+            return {
+                success: true,
+                data: motorBikes,
+                count: motorBikes.length,
+            };
+        } catch (error) {
+            throw new Error(`Error obteniendo deudas de motos: ${error.message}`);
+        }
+    }
+
     async getMotorBikeById(id) {
         try {
             const motorBike = await MotorBike.findByPk(id);

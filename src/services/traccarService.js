@@ -3,6 +3,36 @@ const { MotorBike } = require("../models");
 const DAGPSClient = require("./dagps.service");
 
 /**
+ * Mutex simple para limitar concurrencia de navegadores Playwright
+ */
+class BrowserMutex {
+  constructor() {
+    this.queue = [];
+    this.locked = false;
+  }
+
+  async lock() {
+    return new Promise((resolve) => {
+      if (!this.locked) {
+        this.locked = true;
+        resolve();
+      } else {
+        this.queue.push(resolve);
+      }
+    });
+  }
+
+  unlock() {
+    if (this.queue.length > 0) {
+      const nextResolve = this.queue.shift();
+      nextResolve();
+    } else {
+      this.locked = false;
+    }
+  }
+}
+
+/**
  * Servicio para interactuar con Traccar
  * Contiene la lógica de negocio relacionada con GPS y dispositivos
  */
@@ -10,6 +40,7 @@ class TraccarService {
   constructor() {
     this.daGpsClients = new Map();
     this.activeRequests = new Map();
+    this.browserMutex = new BrowserMutex(); // Cola de espera para navegadores
   }
 
   async getPositions(motorBikeId) {
@@ -77,10 +108,23 @@ class TraccarService {
   }
 
   async getdaGpsClient(trackingToken) {
+    await this.browserMutex.lock(); // BLOQUEA LA COLA (1 navegador a la vez)
     const daGpsClient = new DAGPSClient(trackingToken, "123456");
 
-    await daGpsClient.init();
-    await daGpsClient.close();
+    try {
+      await daGpsClient.init();
+    } catch (error) {
+      console.error(`[RAM-Protect] Error en Playwright (DAGPS): ${error.message}`);
+      throw error; // Retornamos el error al frontend, pero la cola avanza
+    } finally {
+      // 🛡️ GARANTIZAR que el proceso de Google Chrome se destruya liberando 200MB de RAM.
+      try {
+        await daGpsClient.close();
+      } catch (closeErr) {
+        console.error(`[RAM-Protect] Fallo forzando el cierre del navegador: ${closeErr.message}`);
+      }
+      this.browserMutex.unlock(); // LIBERA LA COLA PARA LA SIGUIENTE MOTO
+    }
 
     return daGpsClient;
   }
