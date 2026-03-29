@@ -3,7 +3,7 @@ const { MotorBike } = require('../models');
 class MotorBikeService {
     async getMotorBikes() {
         try {
-            const motorBikes = await MotorBike.findAll();
+            const motorBikes = await MotorBike.findAll({ order: [['name', 'ASC']] });
             return {
                 success: true,
                 data: motorBikes,

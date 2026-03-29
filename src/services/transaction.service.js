@@ -1,4 +1,5 @@
 const { Transaction, Account, sequelize } = require("../models");
+const { Op } = require("sequelize");
 
 class TransactionService {
   async createTransaction(transactionData) {
@@ -40,6 +41,8 @@ class TransactionService {
     motorBikeId,
     accountId,
     type,
+    startDate,
+    endDate,
     page = 1,
     limit = 10,
   }) {
@@ -53,6 +56,19 @@ class TransactionService {
       }
       if (type) {
         whereClause.type = type;
+      }
+      if (startDate && endDate) {
+        whereClause.date = {
+          [Op.between]: [startDate, endDate],
+        };
+      } else if (startDate) {
+        whereClause.date = {
+          [Op.gte]: startDate,
+        };
+      } else if (endDate) {
+        whereClause.date = {
+          [Op.lte]: endDate,
+        };
       }
 
       const transactions = await Transaction.findAll({
