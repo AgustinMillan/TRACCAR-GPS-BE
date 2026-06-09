@@ -5,8 +5,18 @@ const Account = require("./account.model");
 const Transaction = require("./transaction.model");
 const MotorBikeDay = require("./motorBikeDay.model");
 const Maintenance = require("./maintenance.model");
+const Category = require("./category.model");
 
 // Asociaciones
+Category.hasMany(Transaction, {
+  foreignKey: "categoryId",
+  as: "transactions",
+});
+
+Transaction.belongsTo(Category, {
+  foreignKey: "categoryId",
+  as: "category",
+});
 
 MotorBike.hasMany(Transaction, {
   foreignKey: "motorBikeId",
@@ -68,4 +78,5 @@ module.exports = {
   MotorBike,
   MotorBikeDay,
   Maintenance,
+  Category,
 };

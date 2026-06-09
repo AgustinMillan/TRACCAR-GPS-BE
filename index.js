@@ -14,7 +14,7 @@ app.use(
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type"],
-  })
+  }),
 );
 
 // Middleware
@@ -39,10 +39,6 @@ app.get("/health", async (req, res) => {
 
 // Inicializar servidor
 async function startServer() {
-  // Probar conexión a la base de datos
-  // await testConnection();
-
-  // Iniciar servidor
   app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   });

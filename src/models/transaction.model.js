@@ -31,6 +31,14 @@ const Transaction = sequelize.define("Transaction", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  isTransfer: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  categoryId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 });
 
 module.exports = Transaction;
