@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const transactionService = require("../services/transaction.service");
+const { authenticateToken } = require("../middlewares/auth.middleware");
 
+router.use(authenticateToken);
 router.get("/", async (req, res) => {
   try {
     const result = await transactionService.getTransactions(req.query);

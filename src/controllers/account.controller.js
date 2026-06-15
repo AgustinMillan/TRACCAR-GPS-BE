@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const accountService = require("../services/account.service");
+const { authenticateToken } = require("../middlewares/auth.middleware");
 
+router.use(authenticateToken);
 router.post("/", async (req, res) => {
   try {
     const result = await accountService.createAccount(req.body);

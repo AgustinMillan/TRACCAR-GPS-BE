@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const categoryService = require("../services/category.service");
 
+const { authenticateToken } = require("../middlewares/auth.middleware");
+
+router.use(authenticateToken);
+
 router.get("/", async (req, res) => {
   try {
     const result = await categoryService.getCategories();

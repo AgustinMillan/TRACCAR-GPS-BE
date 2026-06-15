@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const MotorBikeDayService = require("../services/motorBikeDay.service");
 
+const { authenticateToken } = require("../middlewares/auth.middleware");
+
+router.use(authenticateToken);
+
 // Crear un día
 router.post("/", async (req, res) => {
   try {
@@ -20,10 +24,17 @@ router.get("/:motorBikeId", async (req, res) => {
     const month = parseInt(req.query.month);
 
     if (!year || !month) {
-      return res.status(400).json({ success: false, error: "Las query parameters 'year' y 'month' son obligatorias" });
+      return res.status(400).json({
+        success: false,
+        error: "Las query parameters 'year' y 'month' son obligatorias",
+      });
     }
 
-    const result = await MotorBikeDayService.getDaysByMotorBikeAndMonth(motorBikeId, year, month);
+    const result = await MotorBikeDayService.getDaysByMotorBikeAndMonth(
+      motorBikeId,
+      year,
+      month,
+    );
     res.json(result);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

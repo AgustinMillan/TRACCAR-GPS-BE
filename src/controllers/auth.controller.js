@@ -37,7 +37,8 @@ router.post("/register-first-admin", async (req, res) => {
     if (!user.username || !user.password || !user.name) {
       return res.status(400).json({
         success: false,
-        error: "El objeto 'user' debe contener 'name', 'username' y 'password'.",
+        error:
+          "El objeto 'user' debe contener 'name', 'username' y 'password'.",
       });
     }
 

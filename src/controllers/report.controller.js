@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const reportService = require("../services/report.service");
 
+const { authenticateToken } = require("../middlewares/auth.middleware");
+
+router.use(authenticateToken);
 router.get("/monthly", async (req, res) => {
   try {
     const today = new Date();

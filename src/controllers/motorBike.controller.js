@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const motorBikeService = require("../services/motorBike.service");
 
+const { authenticateToken } = require("../middlewares/auth.middleware");
+
+router.use(authenticateToken);
 router.get("/", async (req, res) => {
   try {
     const result = await motorBikeService.getMotorBikes();

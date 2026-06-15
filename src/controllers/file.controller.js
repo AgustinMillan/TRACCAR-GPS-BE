@@ -5,6 +5,9 @@ const path = require("path");
 const fs = require("fs");
 const fileService = require("../services/file.service");
 
+const { authenticateToken } = require("../middlewares/auth.middleware");
+
+router.use(authenticateToken);
 // Asegurar que la carpeta de subidas (uploads) existe en la raíz del proyecto
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -35,7 +38,12 @@ const fileFilter = (req, file, cb) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Tipo de archivo no permitido. Solo se aceptan imágenes y PDFs."), false);
+    cb(
+      new Error(
+        "Tipo de archivo no permitido. Solo se aceptan imágenes y PDFs.",
+      ),
+      false,
+    );
   }
 };
 
