@@ -31,3 +31,6 @@ dist/
 build/
 *.tsbuildinfo
 
+# Uploaded Files
+uploads/
+

@@ -7,6 +7,7 @@ const MotorBikeDay = require("./motorBikeDay.model");
 const Maintenance = require("./maintenance.model");
 const Category = require("./category.model");
 const Client = require("./client.model");
+const File = require("./file.model");
 
 // Asociaciones
 Category.hasMany(Transaction, {
@@ -91,4 +92,5 @@ module.exports = {
   Maintenance,
   Category,
   Client,
+  File,
 };

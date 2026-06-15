@@ -12,5 +12,6 @@ router.use("/motor-bike-days", require("./motorBikeDay.controller"));
 router.use("/reports", require("./report.controller"));
 router.use("/categories", require("./categories.controller"));
 router.use("/clients", require("./client.controller"));
+router.use("/files", require("./file.controller"));
 
 module.exports = router;

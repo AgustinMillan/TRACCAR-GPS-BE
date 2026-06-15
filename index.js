@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const { testConnection } = require("./src/database/connection");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,7 @@ app.use(
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Importar controllers
 const indexController = require("./src/controllers/index.controller");
