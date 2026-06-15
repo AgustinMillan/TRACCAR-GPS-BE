@@ -13,5 +13,7 @@ router.use("/reports", require("./report.controller"));
 router.use("/categories", require("./categories.controller"));
 router.use("/clients", require("./client.controller"));
 router.use("/files", require("./file.controller"));
+router.use("/auth", require("./auth.controller"));
+router.use("/users", require("./user.controller"));
 
 module.exports = router;

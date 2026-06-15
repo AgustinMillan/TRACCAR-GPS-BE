@@ -8,6 +8,7 @@ const Maintenance = require("./maintenance.model");
 const Category = require("./category.model");
 const Client = require("./client.model");
 const File = require("./file.model");
+const User = require("./user.model");
 
 // Asociaciones
 Category.hasMany(Transaction, {
@@ -93,4 +94,5 @@ module.exports = {
   Category,
   Client,
   File,
+  User,
 };
