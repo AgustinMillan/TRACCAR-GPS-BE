@@ -6,6 +6,7 @@ const Transaction = require("./transaction.model");
 const MotorBikeDay = require("./motorBikeDay.model");
 const Maintenance = require("./maintenance.model");
 const Category = require("./category.model");
+const Client = require("./client.model");
 
 // Asociaciones
 Category.hasMany(Transaction, {
@@ -68,6 +69,16 @@ Maintenance.belongsTo(MotorBikeDay, {
   as: "motorBikeDay",
 });
 
+Client.hasMany(MotorBike, {
+  foreignKey: "clientId",
+  as: "motorBikes",
+});
+
+MotorBike.belongsTo(Client, {
+  foreignKey: "clientId",
+  as: "client",
+});
+
 // ⚠️ En producción: usar migraciones, no sync
 sequelize.sync({ alter: true });
 
@@ -79,4 +90,5 @@ module.exports = {
   MotorBikeDay,
   Maintenance,
   Category,
+  Client,
 };

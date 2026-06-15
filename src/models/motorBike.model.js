@@ -40,6 +40,18 @@ const MotorBike = sequelize.define("MotorBike", {
     type: DataTypes.DATEONLY,
     allowNull: true,
   },
+  domain: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  seguro: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  clientId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 });
 
 module.exports = MotorBike;

@@ -1,9 +1,12 @@
-const { MotorBike } = require('../models');
+const { MotorBike, Client } = require('../models');
 
 class MotorBikeService {
     async getMotorBikes() {
         try {
-            const motorBikes = await MotorBike.findAll({ order: [['name', 'ASC']] });
+            const motorBikes = await MotorBike.findAll({
+                include: [{ model: Client, as: 'client' }],
+                order: [['name', 'ASC']]
+            });
             return {
                 success: true,
                 data: motorBikes,
@@ -32,7 +35,9 @@ class MotorBikeService {
 
     async getMotorBikeById(id) {
         try {
-            const motorBike = await MotorBike.findByPk(id);
+            const motorBike = await MotorBike.findByPk(id, {
+                include: [{ model: Client, as: 'client' }]
+            });
             return {
                 success: true,
                 data: motorBike,
